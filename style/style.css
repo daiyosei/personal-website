@@ -6,16 +6,6 @@
     --text-color: #f3d090;
 }
 
-@media (prefers-color-scheme: light) {
-	:root {
-	    --accent-color: #920a0d;
-	    --background-color: #faf3c3;
-	    --text-color: #920a0d;
-	}
-}
-
-
-
 /* ---- Font Imports ---- */
 @font-face {
     font-family: 'PPEditorialNew';
@@ -39,6 +29,15 @@
 }
 
 */
+html, body {
+  height: 100vh;
+  margin: 0;
+}
+
+html { scrollbar-width: none; } /* Firefox */
+body { -ms-overflow-style: none; } /* IE and Edge */
+body::-webkit-scrollbar, body::-webkit-scrollbar-button { display: none; } /* Chrome */
+
 
 @font-face {
     font-family: 'PPEditorialNew';
@@ -67,7 +66,7 @@ html, body {
 
 .button.is-black.social-icon { background-color: transparent; border: none; }
 
-.yantra-image { margin-bottom: 2rem; }
+
 @media screen and (max-width: 768px) {
     .yantra-image.image { width: 96px; height: 96px; }
 }
@@ -85,91 +84,26 @@ html, body {
 
 .social-icon:hover .icon i { color: var(--accent-color); }
 
-/* GPG Key Spoiler Effect */
-.gpg-text .spoiler {
-    color: var(--accent-color);
-    background-color: var(--accent-color);
-    
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-.gpg-text .spoiler:hover { color: var(--text-color); background-color: transparent; }
-
 .public-key {
-    color: var(--text-color);
+    color: var(--accent-color);
     font-family: monospace;
+    font-size: 13px;
     word-break: break-all;   
     text-decoration: none;
-    margin-top: 0.5rem;
     transition: color 0.2s ease;
 }
 
 .public-key:hover {
-    color: var(--accent-color);
+    color: var(--text-color);
 }
 
 
 @media screen and (min-width: 1024px) {
     .main-greeting.title {
-        font-size: 10vh;
+        font-size: 8vh;
     }
     .bio .subtitle {
         font-size: 2rem;
-    }
-    .social-buttons {
-        justify-content: center;
-    }
-}
-
-/* For Firefox */
-html {
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) var(--background-color);
-}
-
-::-webkit-scrollbar {
-    width: 7px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--background-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
-    border-radius: 10px;
-}
-
-
-.about-me-section {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.about-me-paragraph {
-    width: 60%;
-    padding-right: 5%;
-}
-
-.alice-dance{
-    height: 43vh;
-}
-
-.about-me {
-        padding: 5%;
-    }
-
-.about-me-title {
-    padding-bottom: 5%;
-}
-
-@media screen and (max-width: 768px) {
-    .about-me-paragraph {
-        padding: 0%;
-        width: 100%;
-        justify-content: left;
     }
 }
 
@@ -182,6 +116,10 @@ html {
   text-decoration: none;
   position: relative;
   padding-bottom: 4px; /* The distance between text and underline */
+}
+
+.link:hover {
+    color: var(--text-color);
 }
 
 .link::before {
