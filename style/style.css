@@ -8,22 +8,22 @@
 
 /* ---- Font Imports ---- */
 @font-face {
-    font-family: 'PPEditorialNew';
-    src: url('../asset/font/PPEditorialNew-Regular.woff2');
+    font-family: 'PPKyoto';
+    src: url('../asset/font/PPKyoto-Medium.woff2');
     font-weight: normal; /* 400 */
     font-style: normal;
 }
 
 /*
 @font-face {
-    font-family: 'PPEditorialNew';
-    src: url('../asset/font/PPEditorialNew-Ultrabold.otf') format('opentype');
+    font-family: 'PPKyoto';
+    src: url('../asset/font/PPKyoto-Ultrabold.otf') format('opentype');
     font-weight: bold; /* 700
     font-style: normal;
 }
 @font-face {
-    font-family: 'PPEditorialNew';
-    src: url('../asset/font/PPEditorialNew-Ultralight.otf') format('opentype');
+    font-family: 'PPKyoto';
+    src: url('../asset/font/PPKyoto-Ultralight.otf') format('opentype');
     font-weight: 200;
     font-style: normal;
 }
@@ -40,15 +40,15 @@ body::-webkit-scrollbar, body::-webkit-scrollbar-button { display: none; } /* Ch
 
 
 @font-face {
-    font-family: 'PPEditorialNew';
-    src: url('../asset/font/PPEditorialNew-UltralightItalic.woff2');
+    font-family: 'PPKyoto';
+    src: url('../asset/font/PPKyoto-LightItalic.woff2');
     font-weight: 200;
     font-style: italic;
 }
 
 html, body {
     background-color: var(--background-color);
-    font-family: 'PPEditorialNew', 'Times New Roman', serif;
+    font-family: 'PPKyoto', 'Times New Roman', serif;
     color: var(--text-color);
 }
 .hero { 
