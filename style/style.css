@@ -53,12 +53,46 @@ html, body {
 }
 .hero { 
     color: var(--text-color);
-    z-index: 10;
+    z-index: 1;
     position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.pond-panel {
+    position: absolute;
+    z-index: 0;
+    inset: 0 0 0 auto;
+    width: 40%;
+    overflow: hidden;
+    background: #0a3520;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 25%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 25%);
+}
+
+#pixi-container,
+#pixi-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-body {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    width: 60%;
+    padding-left: clamp(1.5rem, 6vw, 7rem);
+    padding-right: clamp(1rem, 3vw, 3rem);
+}
+
+.hero-body > .container {
+    width: 100%;
+    max-width: none !important;
 }
 
 .title, .subtitle { color: var(--text-color); font-weight: normal; }
-.main-greeting.title { line-height: 1.2; }
+.large-text { line-height: 1.2; }
 
 /* Font Variation Helpers */
 .font-ultralight { font-weight: 200; font-style: normal; }
@@ -68,7 +102,29 @@ html, body {
 
 
 @media screen and (max-width: 768px) {
+    html, body {
+        height: auto;
+        min-height: 100%;
+    }
+    .hero { min-height: 100vh; }
     .yantra-image.image { width: 96px; height: 96px; }
+    .hero-body {
+        width: 100%;
+        padding: 1.5rem 1.5rem 2.5rem;
+        align-items: flex-start;
+    }
+    .pond-panel {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: 38vh;
+        min-height: 240px;
+        max-height: 360px;
+        flex: 0 0 auto;
+        opacity: 1;
+        -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 100%);
+        mask-image: linear-gradient(180deg, #000 68%, transparent 100%);
+    }
 }
 
 /* Inline waving hand GIF */
@@ -100,10 +156,11 @@ html, body {
 
 @media screen and (min-width: 1024px) {
     .main-greeting.title {
+        /*font-size: clamp(3rem, 6vw, 6.5rem);*/
         font-size: 8vh;
     }
     .bio .subtitle {
-        font-size: 2rem;
+        font-size: clamp(1.2rem, 1.7vw, 1.75rem);
     }
 }
 
@@ -139,43 +196,6 @@ a:hover::before {
   background-size: 100% 2px;
 }
 
-.yin-yang-wrapper {
-    position: absolute;
-    top: 100vh;
-    right: 0;
-    transform: translate(30%, -75%);
-    z-index: 0;
-    pointer-events: none; /* Allows clicking through it */
-}
-
-/* The ASCII text styling */
-.yin-yang-ascii {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 10pt;
-    font-weight: bold;
-    color: var(--accent-color);
-    background-color: transparent;
-    border: none;
-    opacity: 0.9;
-    user-select: none;
-    letter-spacing: 1.5px;
-    z-index: -1;
-
-    /* animation */
-    animation: rotate-center 15s linear infinite;
-
-    /* hw accln */
-    will-change: transform;
-}
-
-@keyframes rotate-center {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
 .footer-badge {
 	display: flex;
 	justify-content: center;

@@ -1,18 +1,20 @@
 {
+  "name": "personal-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "dev": "vite",
+    "start": "npm run dev",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "pixi.js": "^8.8.1"
   },
   "devDependencies": {
-    "beasties-webpack-plugin": "^0.3.5",
-    "copy-webpack-plugin": "^13.0.0",
-    "css-loader": "^7.1.2",
-    "css-minimizer-webpack-plugin": "^7.0.2",
-    "glob": "^11.0.2",
-    "html-webpack-plugin": "^5.6.3",
-    "mini-css-extract-plugin": "^2.9.2",
-    "path": "^0.12.7",
-    "purgecss-webpack-plugin": "^7.0.2",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1"
+    "typescript": "~5.7.3",
+    "vite": "^6.2.0"
   }
 }

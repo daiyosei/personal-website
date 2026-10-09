@@ -45,6 +45,9 @@
 <body>
 
     <section class="hero is-fullheight">
+        <div class="pond-panel" aria-hidden="true">
+            <div id="pixi-container"></div>
+        </div>
         <div class="hero-body">
             <div class="container has-text-left">
                 <figure class="image is-96x96 is-inline-block yantra-image">
@@ -54,7 +57,7 @@
                 </figure>
                 <div class="greeting mt-6">
                     <h1 class="title is-size-2-mobile main-greeting">
-                        <span class="font-ultralight">Hello there
+                        <span class="font-ultralight large-text">Hello there
                             <img src="asset/img/remiliawalk.webp" alt="Remelia Scarlet from Touhou project walking" 
 			    class="wave-gif"
 			    title="Mistress Remelia... the vampire girl from Touhou project"
@@ -62,19 +65,26 @@
                         </span>
                         <br>
                         <span class="font-ultralight">I am <span class="font-ultralight-italic">Ritabrata Das</span></span>
+                        <br>
+                        <span class="is-size-6">Pronounced <i>/ˈri.to.brɔ.to/</i></span>
                     </h1>
                     <br class="is-hidden-desktop is-hidden-tablet">
                 </div>
                 <div class="bio">
                     <p class="subtitle is-size-4-desktop is-size-5-mobile">
-                        Undergraduate studying Computer Science and Engineering<br><br>
-		    learning stuff—systems and graphics engineering mostly<span class="is-hidden-desktop">,</span>
-                        <br class="is-hidden-mobile">
-                        <i><span class="is-hidden-desktop is-hidden-tablet">&nbsp;</span>love understandin'</i> computers at a very low level<br><br>
-                            I usually work with C++ and Python, and I am <i>interested</i><br class="is-hidden-mobile">
-                        <span class="is-hidden-desktop is-hidden-tablet">&nbsp;</span>in domains such as Graphics Engineering, Network Engineering<br class="is-hidden-mobile">
+                        Undergraduate student in Computer Science and Engineering at Vellore Institute of Technology<br><br>
+
+                            I am currently interested in Graphics and Systems engineering and I
+                        <span class="is-hidden-desktop is-hidden-tablet">&nbsp;</span>love understanding computers at a <i>very low level.</i><br><br>
+                            I mostly work with C++ and Python, and over time I have done development
+                        <span class="is-hidden-desktop is-hidden-tablet">&nbsp;</span>in domains such as Graphics Engineering, Network Engineering
                             <span class="is-hidden-desktop is-hidden-tablet">&nbsp;</span><i>&</i> Backend Development
+                        <br><br>
+                        <span>
+                            I speak Bengali, Hindi, English and Odia. My local time zone is Indian Standard Time(GMT+5:30)
+                        </span>
                     </p>
+                    
                 </div>
                 <div class="social-buttons mt-5">
                     <a href="mailto:theindiandev@theindiandev.in" class="button is-black social-icon" aria-label="Email">
@@ -105,45 +115,16 @@
                 </div>
                 <div class="gpg-key has-text-left">
                     <p class="my-4">
-                        Wish to hire me? <a href="/public/resume.pdf" class="link is-size-6">Check out my <b><i>Résumé</i></b></a>
+                        I'm open to jobs and internships. Wish to hire me? <a href="/public/resume.pdf" class="link is-size-6">Check out my <b><i>Résumé</i></b></a>
                     </p>
                     <p>
-                    <span class="is-size-6 gpg-text" style="width: 100%;">My public GPG Key : </span>
+                    <span class="is-size-6 gpg-text" style="width: 100%;">For private correspondence, please use my GPG key<br></span>
                     <a href="public/ritabrata.asc" class="public-key">0946 5185 B05D CEFD 2D73  DA9D D03A EB4F 9545 997A</a>
                     </p>
                 </div>
             </div>
         </div>
     </section>
-<div class="yin-yang-wrapper is-hidden-mobile">
-    <pre class="yin-yang-ascii">
-                                                      
-                  .;ldk0KXXXK0xl,                     
-              ,d0WMMMMMMMMMMMMMMMMO;                  
-           ;OWMMMMMMMMMMMMMMMMMMMMMMX,                
-        .oNMMMMMMMMMMMMMMMMMMMMMMMMMMMl               
-       oWMMMMMMMMMMMMMMMMKkk0MMMMMMMMMM,              
-     'NMMMMMMMMMMMMMMMMW.    .XMMMMMMMMO              
-    cMMMMMMMMMMMMMMMMMM0      xMMMMMMMMK              
-   cMMMMMMMMMMMMMMMMMMMMk,..'dMMMMMMMMMd              
-  'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN.              
-  XMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMK.               
- ,MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMXc                 
- oMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMXx,                   
- dMMMMMMMMMMMMMMMMMMMMXkdllcc;'.                      
- oMMMMMMMMMMMMMMMMWk;                                 
- .MMMMMMMMMMMMMMWo                                    
-  XMMMMMMMMMMMMX.                                     
-  .MMMMMMMMMMMN.                                      
-   'MMMMMMMMMMc         ;0NN0c                        
-    .WMMMMMMMM'        .MMMMMM;                       
-      XMMMMMMM;         OMMMM0                        
-       'WMMMMM0          .''.                         
-         .NMMMMx                                      
-            oWMMK.                                    
-                kNO,                                  
-                       .                              
-    </pre>
-</div>
+    <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
