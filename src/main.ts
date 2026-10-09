@@ -69,6 +69,9 @@ class FishSkin {
   readonly width: number;
   readonly height: number;
   readonly restX: Float32Array;
+  readonly restLengths: Float32Array;
+  readonly wagU: Float32Array;
+  readonly wagTaper: Float32Array;
   readonly uvs: Float32Array;
   readonly indices: Uint32Array;
 
@@ -78,8 +81,15 @@ class FishSkin {
     this.height = texture.height;
 
     this.restX = new Float32Array(SPINE_SLICES);
+    this.restLengths = new Float32Array(SPINE_SLICES);
+    this.wagU = new Float32Array(SPINE_SLICES);
+    this.wagTaper = new Float32Array(SPINE_SLICES);
     for (let i = 0; i < SPINE_SLICES; i++) {
       this.restX[i] = pointX(i, SPINE_SLICES, this.width);
+      this.wagU[i] = this.restX[i] / this.width;
+      const t = this.wagU[i] / TAIL_WAG_FRAC;
+      this.wagTaper[i] = this.wagU[i] < TAIL_WAG_FRAC ? 1 - t * t * (3 - 2 * t) : 0;
+      if (i > 0) this.restLengths[i] = this.restX[i] - this.restX[i - 1];
     }
 
     this.uvs = new Float32Array(SPINE_SLICES * 4);
@@ -419,7 +429,16 @@ function clamp(value: number, min: number, max: number): number {
   const app = new Application();
   const pondElement = document.getElementById("pixi-container");
   if (!pondElement) throw new Error("Missing #pixi-container element");
-  await app.init({ background: "#000814", resizeTo: pondElement });
+  const isPhone =
+    window.matchMedia("(max-width: 767px) and (pointer: coarse)").matches;
+  const renderResolution = isPhone ? 1 : window.devicePixelRatio || 1;
+  await app.init({
+    background: "#000814",
+    resizeTo: pondElement,
+    // Reduce high-DPI backing-store cost on phones; keep native resolution elsewhere.
+    resolution: renderResolution,
+  });
+  app.ticker.maxFPS = isPhone ? 24 : 60;
   pondElement.appendChild(app.canvas);
   const placementSeed = 1922;
   const placementRandom = createSeededRandom(placementSeed);
@@ -558,8 +577,12 @@ function clamp(value: number, min: number, max: number): number {
     readonly speed: number;
     readonly wagPhase: number;
     readonly wagAmp: number;
+    readonly wagScale: number;
+    readonly segmentLengths: Float32Array;
     readonly spineX = new Float32Array(SPINE_SLICES);
     readonly spineY = new Float32Array(SPINE_SLICES);
+    readonly directionX = new Float32Array(SPINE_SLICES);
+    readonly directionY = new Float32Array(SPINE_SLICES);
     heading: number;
     targetX = 0;
     targetY = 0;
@@ -576,6 +599,11 @@ function clamp(value: number, min: number, max: number): number {
       this.speed = 40 + Math.random() * 60; // px/s
       this.wagPhase = Math.random() * Math.PI * 2;
       this.wagAmp = skin.width * wagAmpFrac;
+      this.wagScale = Math.min(this.speed / 60, 1.4);
+      this.segmentLengths = new Float32Array(SPINE_SLICES);
+      for (let i = 1; i < SPINE_SLICES; i++) {
+        this.segmentLengths[i] = skin.restLengths[i] * this.scale;
+      }
       this.heading = Math.random() * Math.PI * 2;
 
       // Start somewhere in the tank with the body laid out straight behind the head
@@ -631,7 +659,6 @@ function clamp(value: number, min: number, max: number): number {
     }
 
     update(dt: number, time: number, width: number, height: number) {
-      const { restX } = this.skin;
       const last = SPINE_SLICES - 1;
       const headX = this.spineX[last];
       const headY = this.spineY[last];
@@ -666,44 +693,36 @@ function clamp(value: number, min: number, max: number): number {
         const tx = this.spineX[i + 1] - this.spineX[i];
         const ty = this.spineY[i + 1] - this.spineY[i];
         const d = Math.hypot(tx, ty) || 1;
-        const seg = (restX[i + 1] - restX[i]) * this.scale;
-        this.spineX[i] = this.spineX[i + 1] - (tx / d) * seg;
-        this.spineY[i] = this.spineY[i + 1] - (ty / d) * seg;
+        const dx = tx / d;
+        const dy = ty / d;
+        this.directionX[i] = dx;
+        this.directionY[i] = dy;
+        const seg = this.segmentLengths[i + 1];
+        this.spineX[i] = this.spineX[i + 1] - dx * seg;
+        this.spineY[i] = this.spineY[i + 1] - dy * seg;
       }
+      this.directionX[last] = this.directionX[last - 1];
+      this.directionY[last] = this.directionY[last - 1];
 
       // Write the ribbon into the vertex buffer
       const data = this.geometry.positions;
-      const wagScale = Math.min(this.speed / 60, 1.4);
       for (let i = 0; i < SPINE_SLICES; i++) {
-        // Tangent toward the head
-        let tx: number;
-        let ty: number;
-        if (i < last) {
-          tx = this.spineX[i + 1] - this.spineX[i];
-          ty = this.spineY[i + 1] - this.spineY[i];
-        } else {
-          tx = this.spineX[i] - this.spineX[i - 1];
-          ty = this.spineY[i] - this.spineY[i - 1];
-        }
-        const tl = Math.hypot(tx, ty) || 1;
-        tx /= tl;
-        ty /= tl;
+        const tx = this.directionX[i];
+        const ty = this.directionY[i];
         const ux = ty; // perpendicular ("up")
         const uy = -tx;
 
         // Tail wag: a traveling wave over the tail fin, tapering to zero at
         // the peduncle so the fin blends continuously into the static body
         let sway = 0;
-        const u = restX[i] / this.skin.width;
-        if (u < TAIL_WAG_FRAC) {
-          const t = u / TAIL_WAG_FRAC; // 0 at the tip, 1 at the peduncle
-          const taper = 1 - t * t * (3 - 2 * t); // smooth 1 → 0 at the root
+        const u = this.skin.wagU[i];
+        if (this.skin.wagTaper[i] !== 0) {
           sway =
             Math.sin(u * wagFreq + time * wagSpeed + this.wagPhase) *
             this.wagAmp *
             this.scale *
-            taper *
-            wagScale;
+            this.skin.wagTaper[i] *
+            this.wagScale;
         }
 
         const cx = this.spineX[i] + ux * sway;

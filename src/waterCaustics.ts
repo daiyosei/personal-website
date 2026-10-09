@@ -86,7 +86,8 @@ uniform vec4 u_levelsR;
 uniform vec4 u_levelsG;
 uniform vec4 u_levelsB;
 uniform vec3 u_levelsBias;
-uniform vec4 u_grain; // fine amount, coarse amount, fine seed, coarse seed
+uniform vec2 u_grainAmount;
+uniform sampler2D u_grain;
 
 #define TAU 6.28318530718
 #define MAX_ITER 3
@@ -94,12 +95,6 @@ uniform vec4 u_grain; // fine amount, coarse amount, fine seed, coarse seed
 vec3 grade(vec3 color, vec4 r, vec4 g, vec4 b, vec3 bias) {
   vec4 c = vec4(color, 1.0);
   return clamp(vec3(dot(r, c), dot(g, c), dot(b, c)) + bias, 0.0, 1.0);
-}
-
-// Same static grain as Pixi's NoiseFilter. It stays in screen pixels and is
-// applied last, so refraction sampling cannot smooth away the sand texture.
-float grain(float seed) {
-  return fract(sin(dot(gl_FragCoord.xy * seed, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
 }
 
 void main() {
@@ -125,16 +120,21 @@ void main() {
   vec3 sand = clamp(mix(u_sand, u_tint, u_tintAmount) + vec3(light), 0.0, 1.0);
   sand = grade(sand, u_contrastR, u_contrastG, u_contrastB, u_contrastBias);
   sand = grade(sand, u_levelsR, u_levelsG, u_levelsB, u_levelsBias);
-  sand = clamp(sand + grain(u_grain.z) * u_grain.x, 0.0, 1.0);
-  sand = clamp(sand + grain(u_grain.w) * u_grain.y, 0.0, 1.0);
+  vec2 grainFields = texture(u_grain, v_uv).rg - vec2(0.5);
+  sand = clamp(sand + grainFields.x * u_grainAmount.x, 0.0, 1.0);
+  sand = clamp(sand + grainFields.y * u_grainAmount.y, 0.0, 1.0);
 
   // The object texture is premultiplied. Its alpha lets the sand's grade and
   // grain remain visible around the objects without grading their colours.
   vec4 scene = texture(u_scene, v_uv + bend);
-  vec3 layer = scene.a > 0.0 ? scene.rgb / scene.a : vec3(0.0);
-  layer = mix(layer, u_tint, u_tintAmount * scene.a);
-
-  vec3 objects = clamp(layer + vec3(light), 0.0, 1.0) * scene.a;
+  float a = scene.a;
+  float tintMix = u_tintAmount * a;
+  vec3 objects = clamp(
+    scene.rgb * (1.0 - tintMix)
+      + u_tint * tintMix * a
+      + vec3(light) * a,
+    vec3(0.0), vec3(a)
+  );
   outColor = vec4(objects + sand * (1.0 - scene.a), 1.0);
 }`;
 
@@ -146,7 +146,9 @@ export class WaterCaustics {
   private readonly container: Container;
   private readonly uniforms: UniformGroup;
   private readonly shader: Shader;
+  private readonly sand: SandAppearance;
   private sceneTex: RenderTexture;
+  private grainTex: Texture;
   private w = 0;
   private h = 0;
 
@@ -158,6 +160,7 @@ export class WaterCaustics {
     this.app = app;
     this.container = container;
     const sand = options.sand;
+    this.sand = sand;
 
     this.uniforms = new UniformGroup({
       u_time: { value: 0, type: "f32" },
@@ -183,15 +186,7 @@ export class WaterCaustics {
         value: [sand.levels[4], sand.levels[9], sand.levels[14]],
         type: "vec3<f32>",
       },
-      u_grain: {
-        value: [
-          sand.fineNoise,
-          sand.coarseNoise,
-          sand.fineSeed,
-          sand.coarseSeed,
-        ],
-        type: "vec4<f32>",
-      },
+      u_grainAmount: { value: [sand.fineNoise, sand.coarseNoise], type: "vec2<f32>" },
     });
 
     this.shader = Shader.from({
@@ -202,6 +197,7 @@ export class WaterCaustics {
       },
       resources: {
         u_scene: Texture.EMPTY.source,
+        u_grain: Texture.EMPTY.source,
         uniforms: this.uniforms,
       },
     });
@@ -215,6 +211,7 @@ export class WaterCaustics {
     this.result.cullable = false;
 
     this.sceneTex = RenderTexture.create({ width: 1, height: 1 });
+    this.grainTex = Texture.EMPTY;
   }
 
   /** Render the scene and update the shader time. */
@@ -228,6 +225,29 @@ export class WaterCaustics {
       this.sceneTex.destroy(true);
       this.sceneTex = RenderTexture.create({ width: w, height: h });
       this.shader.resources.u_scene = this.sceneTex.source;
+      if (this.grainTex !== Texture.EMPTY) this.grainTex.destroy(true);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Unable to create grain texture");
+      const pixels = context.createImageData(canvas.width, canvas.height);
+      const seeds = [this.sand.fineSeed, this.sand.coarseSeed];
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          const offset = (y * canvas.width + x) * 4;
+          for (let channel = 0; channel < 2; channel++) {
+            const seed = seeds[channel];
+            const dot = (x + 0.5) * seed * 12.9898 + (y + 0.5) * seed * 78.233;
+            const value = Math.sin(dot) * 43758.5453;
+            pixels.data[offset + channel] = Math.floor((value - Math.floor(value)) * 255 + 0.5);
+          }
+          pixels.data[offset + 3] = 255;
+        }
+      }
+      context.putImageData(pixels, 0, 0);
+      this.grainTex = Texture.from(canvas);
+      this.shader.resources.u_grain = this.grainTex.source;
     }
 
     this.uniforms.uniforms.u_time = time;
@@ -239,4 +259,5 @@ export class WaterCaustics {
       clearColor: [0, 0, 0, 0],
     });
   }
+
 }
