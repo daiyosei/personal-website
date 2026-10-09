@@ -8,7 +8,7 @@
         "components": [
           {
             "type": 10,
-            "content": "# Hi, I am Ritabrata Das\nI am an undergrad interested in Graphics and Systems Engineering\nThank you for stopping by and checking out my website ^^"
+            "content": "Hi, I am an undergrad interested in Graphics and Systems Engineering\nThank you for stopping by and checking out my website ^^"
           }
         ],
         "accessory": {
@@ -21,6 +21,7 @@
       {
         "type": 1,
         "components": [
+          { "type": 2, "style": 5, "url": "mailto:me@theindiandev.in", "label": "E-Mail" },
           { "type": 2, "style": 5, "url": "https://discord.gg/qEYbuWu5NE", "label": "Discord" },
           { "type": 2, "style": 5, "url": "https://github.com/daiyosei", "label": "GitHub" },
           { "type": 2, "style": 5, "url": "https://t.me/theindiandev", "label": "Telegram" },
