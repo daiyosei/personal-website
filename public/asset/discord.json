@@ -1,9 +1,23 @@
 {
   "component": {
     "type": 17,
-    "spoiler": false,
     "accent_color": 9570829,
     "components": [
+      {
+        "type": 9,
+        "components": [
+          {
+            "type": 10,
+            "content": "# Hi, I am Ritabrata Das\nI am an undergrad interested in Graphics and Systems Engineering\nThank you for stopping by and checking out my website ^^"
+          }
+        ],
+        "accessory": {
+          "type": 11,
+          "media": {
+            "url": "https://avatars.githubusercontent.com/u/70189264?v=4"
+          }
+        }
+      },
       {
         "type": 1,
         "components": [
