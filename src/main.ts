@@ -565,7 +565,7 @@ function clamp(value: number, min: number, max: number): number {
   const wagAmpFrac = 0.08; // peak wag displacement, as a fraction of texture width
   const wagFreq = 6; // radians per unit of u
   const wagSpeed = 3;
-  const wallMargin = 90; // how close to an edge before steering away
+  const wallMargin = isPhone ? -90 : 50; // how close to an edge before steering away
 
   class Fish {
     readonly mesh: Mesh;
